@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-sign-up',
@@ -8,29 +8,31 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./sign-up.component.css']
 })
 export class SignUpComponent {
-  email: string = '';
-  password: string = '';
-  username:string='';
+  email = '';
+  password = '';
+  username = '';
 
-  constructor(private route: Router, private http: HttpClient) {}
+  constructor(private router: Router, private authService: AuthService) {}
 
   OnRegister() {
-    this.route.navigateByUrl('/register');
+    this.router.navigateByUrl('/register');
   }
 
   onLogin() {
     const loginData = {
       Email: this.email,
       passwordHash: this.password,
-      Username:this.username
+      Username: this.username
     };
 
-    this.http.post('http://localhost:5077/api/auth/login', loginData).subscribe({
+    this.authService.login(loginData).subscribe({
       next: (response: any) => {
-        console.log('Login successful:', response);
-        // optionally save token
-        // localStorage.setItem('token', response.token);
-        this.route.navigateByUrl('/dashboard'); 
+        this.authService.saveUserData(response.token, response.role);
+        if (response.role === 'Admin') {
+          this.router.navigateByUrl('/admin');
+        } else {
+          this.router.navigateByUrl('/dashboard');
+        }
       },
       error: err => {
         console.error('Login failed:', err);

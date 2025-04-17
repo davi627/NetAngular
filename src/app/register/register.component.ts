@@ -11,6 +11,7 @@ export class RegisterComponent {
   username: string = '';
   email: string = '';
   password: string = '';
+  role: string = ''; // Add role field
 
   constructor(private router: Router, private http: HttpClient) {}
 
@@ -18,13 +19,19 @@ export class RegisterComponent {
     const body = {
       Username: this.username,
       Email: this.email,
-      PasswordHash: this.password 
+      PasswordHash: this.password,
+      Role: this.role 
     };
-
+  
     this.http.post('http://localhost:5077/api/auth/register', body).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         console.log('Registration successful:', res);
-        this.router.navigateByUrl('/login');
+        if (res.success) {
+          alert('Registration successful');
+          this.router.navigateByUrl('/login');
+        } else {
+          alert('Registration failed. Please try again.');
+        }
       },
       error: (err) => {
         console.error('Registration failed:', err);
@@ -32,7 +39,7 @@ export class RegisterComponent {
       }
     });
   }
-
+  
   login() {
     this.router.navigateByUrl('/login');
   }

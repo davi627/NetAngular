@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "2i3kAi3wL5U=",
+  "dgSpecHash": "utaXrI+Qx78=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Mbita\\Desktop\\NetAngular\\AuthApi\\AuthApi.csproj",
+  "projectFilePath": "C:\\Users\\Mbita\\Desktop\\NetAngular\\AuthAPi\\AuthApi.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Mbita\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\Mbita\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
