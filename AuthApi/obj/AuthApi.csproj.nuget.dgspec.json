@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Mbita\\Desktop\\NetAngular\\AuthAPi\\AuthApi.csproj": {}
+    "C:\\Users\\Mbita\\Desktop\\NetAngular\\AuthApi\\AuthApi.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Mbita\\Desktop\\NetAngular\\AuthAPi\\AuthApi.csproj": {
+    "C:\\Users\\Mbita\\Desktop\\NetAngular\\AuthApi\\AuthApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Mbita\\Desktop\\NetAngular\\AuthAPi\\AuthApi.csproj",
+        "projectUniqueName": "C:\\Users\\Mbita\\Desktop\\NetAngular\\AuthApi\\AuthApi.csproj",
         "projectName": "AuthApi",
-        "projectPath": "C:\\Users\\Mbita\\Desktop\\NetAngular\\AuthAPi\\AuthApi.csproj",
+        "projectPath": "C:\\Users\\Mbita\\Desktop\\NetAngular\\AuthApi\\AuthApi.csproj",
         "packagesPath": "C:\\Users\\Mbita\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Mbita\\Desktop\\NetAngular\\AuthAPi\\obj\\",
+        "outputPath": "C:\\Users\\Mbita\\Desktop\\NetAngular\\AuthApi\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

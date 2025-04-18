@@ -44,7 +44,44 @@ public async Task<IActionResult> Register([FromBody] User userDto)
     _context.Users.Add(userDto);
     await _context.SaveChangesAsync();
     return Ok(new { message = "User created", success = true });
+    }
+
+    // GET: api/auth/users
+[HttpGet("users")]
+public async Task<IActionResult> GetAllUsers()
+{
+    var users = await _context.Users.ToListAsync();
+    return Ok(users);
 }
+
+[HttpPut("users/{id}")]
+public async Task<IActionResult> UpdateUser(int id, User updatedUser)
+{
+    var user = await _context.Users.FindAsync(id);
+    if (user == null) return NotFound();
+
+    user.Username = updatedUser.Username;
+    user.Email = updatedUser.Email;
+    if (!string.IsNullOrEmpty(updatedUser.PasswordHash))
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(updatedUser.PasswordHash);
+    user.Role = updatedUser.Role;
+
+    await _context.SaveChangesAsync();
+    return Ok(user);
+}
+
+[HttpDelete("users/{id}")]
+public async Task<IActionResult> DeleteUser(int id)
+{
+    var user = await _context.Users.FindAsync(id);
+    if (user == null) return NotFound();
+
+    _context.Users.Remove(user);
+    await _context.SaveChangesAsync();
+    return NoContent();
+}
+
+
 
 
         [HttpPost("login")]

@@ -1,1 +1,137 @@
-<p>admin works!</p>
+<div class="dashboard-container">
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="logo">🏥 MyHospital Admin</div>
+    <div class="logout" (click)="logout()">Logout</div>
+  </div>
+
+  <!-- Sidebar + Main Content -->
+  <div class="body-container">
+    <div class="sidebar">
+      <ul>
+        <li [class.active]="selectedSection === 'manageUsers'" (click)="selectSection('manageUsers')">👤 Manage Users</li>
+        <li [class.active]="selectedSection === 'reports'" (click)="selectSection('reports')">📊 Reports</li>
+        <li [class.active]="selectedSection === 'settings'" (click)="selectSection('settings')">⚙️ Settings</li>
+      </ul>
+    </div>
+    <div class="main-content">
+      <!-- Manage Users Section -->
+      <div *ngIf="selectedSection === 'manageUsers'">
+        <h2>Registered Users</h2>
+        <div class="search-container">
+          <input
+            type="text"
+            placeholder="Search by username, email, or role..."
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="currentPage = 1" />
+        </div>
+        
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let user of paginatedUsers">
+
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.role }}</td>
+                <td class="actions">
+                  <button class="edit-btn" (click)="editUser(user)">✏️ Edit</button>
+                  <button class="delete-btn" (click)="deleteUser(user.id)">🗑️ Delete</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination-controls">
+          <button (click)="currentPage = currentPage - 1" [disabled]="currentPage === 1">⬅️ Prev</button>
+          
+          <span>Page {{ currentPage }} of {{ totalPages }}</span>
+          
+          <button (click)="currentPage = currentPage + 1" [disabled]="currentPage === totalPages">Next ➡️</button>
+        </div>
+        
+        
+        <div class="form-container">
+          <h2>Add New User</h2>
+          <form (ngSubmit)="saveUser()">
+            <div class="form-group">
+              <label for="username">Username</label>
+              <input id="username" [(ngModel)]="userForm.username" name="username" placeholder="Username" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input id="email" [(ngModel)]="userForm.email" name="email" placeholder="Email" type="email" required>
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input id="password" [(ngModel)]="userForm.passwordHash" name="password" placeholder="Password" type="password" [required]="!editingUser">
+            </div>
+            <div class="form-group">
+              <label for="role">Role</label>
+              <select id="role" [(ngModel)]="userForm.role" name="role" required>
+                <option value="Admin">Admin</option>
+                <option value="User">User</option>
+              </select>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="primary-btn">Create</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Edit User Section -->
+      <div *ngIf="selectedSection === 'editUser'">
+        <div class="form-container edit-form">
+          <h2>Edit User</h2>
+          <form (ngSubmit)="saveUser()">
+            <div class="form-group">
+              <label for="edit-username">Username</label>
+              <input id="edit-username" [(ngModel)]="userForm.username" name="username" placeholder="Username" required>
+            </div>
+            <div class="form-group">
+              <label for="edit-email">Email</label>
+              <input id="edit-email" [(ngModel)]="userForm.email" name="email" placeholder="Email" type="email" required>
+            </div>
+            <div class="form-group">
+              <label for="edit-password">Password</label>
+              <input id="edit-password" [(ngModel)]="userForm.passwordHash" name="passwordHash" placeholder="Leave blank to keep current password" type="password">
+              <small>Leave blank to keep current password</small>
+            </div>
+            <div class="form-group">
+              <label for="edit-role">Role</label>
+              <select id="edit-role" [(ngModel)]="userForm.role" name="role" required>
+                <option value="Admin">Admin</option>
+                <option value="User">User</option>
+              </select>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="primary-btn">Update</button>
+              <button type="button" class="secondary-btn" (click)="cancelEdit()">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Reports Section -->
+      <div *ngIf="selectedSection === 'reports'">
+        <h2>Reports</h2>
+        <p>Reports content will be available soon...</p>
+      </div>
+
+      <!-- Settings Section -->
+      <div *ngIf="selectedSection === 'settings'">
+        <h2>Settings</h2>
+        <p>Settings content will be available soon...</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,1 +1,22 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+    <div class="topbar">
+      <div class="logo">👨‍⚕️ MyHospital User</div>
+      <div class="logout" (click)="logout()">Logout</div>
+    </div>
+  
+    <div class="body-container">
+      <div class="sidebar">
+        <ul>
+          <li (click)="selectSection('myProfile')">🙍‍♂️ My Profile</li>
+          <li (click)="selectSection('appointments')">📅 Appointments</li>
+          <li (click)="selectSection('help')">❓ Help</li>
+        </ul>
+      </div>
+      <div class="main-content">
+        <div *ngIf="selectedSection === 'myProfile'">My Profile content...</div>
+        <div *ngIf="selectedSection === 'appointments'">Appointments content...</div>
+        <div *ngIf="selectedSection === 'help'">Help content...</div>
+      </div>
+    </div>
+  </div>
+  
