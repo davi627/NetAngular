@@ -11,7 +11,7 @@ export class RegisterComponent {
   username: string = '';
   email: string = '';
   password: string = '';
-  role: string = ''; // Add role field
+  role: string = ''; 
 
   constructor(private router: Router, private http: HttpClient) {}
 

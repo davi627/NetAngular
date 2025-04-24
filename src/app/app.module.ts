@@ -10,6 +10,9 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { AdminComponent } from './admin/admin.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { DoctorsPageComponent } from './doctors-page/doctors-page.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -17,13 +20,15 @@ import { AdminComponent } from './admin/admin.component';
     SignUpComponent,
     RegisterComponent,
     DashboardComponent,
-    AdminComponent
+    AdminComponent,
+    DoctorsPageComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

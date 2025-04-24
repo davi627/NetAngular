@@ -3,9 +3,10 @@ using AuthApi.Models;
 
 namespace AuthApi.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
     {
-        public ApplicationDbContext(DbContextOptions options): base(options){}
-        public DbSet<User> Users { get;set;}
+    public DbSet<User> Users { get;set;}
+        public DbSet<Appointment> Appointments { get; set; }
+
     }
 };

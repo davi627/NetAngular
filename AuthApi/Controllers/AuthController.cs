@@ -81,6 +81,28 @@ public async Task<IActionResult> DeleteUser(int id)
     return NoContent();
 }
 
+//Getting the profile for the user
+[HttpGet("me")]
+public async Task<IActionResult> GetMyProfile()
+{
+    var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+    
+    var user = await _context.Users
+        .Where(u => u.Id == userId)
+        .Select(u => new {
+            u.Id,
+            u.Username,
+            u.Email,
+            u.Role
+        })
+        .FirstOrDefaultAsync();
+
+    if (user == null)
+        return NotFound("User not found");
+
+    return Ok(user);
+}
+
 
 
 
@@ -95,6 +117,7 @@ public async Task<IActionResult> DeleteUser(int id)
 
             var claims = new[]
             {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Username),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Role, user.Role)
@@ -115,7 +138,10 @@ public async Task<IActionResult> DeleteUser(int id)
             return Ok(new
             {
                 token = tokenString,
-                role = user.Role
+                role = user.Role,
+                username = user.Username,
+                id = user.Id
+                
             });
         }
     }

@@ -6,11 +6,13 @@ import { RegisterComponent } from './register/register.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { AdminComponent } from './admin/admin.component';
 import { RoleGuard } from './guards/role.guard';
+import { DoctorsPageComponent } from './doctors-page/doctors-page.component';
 
 const routes: Routes = [
   { path: '', component: LandingPageComponent },
   { path: 'login', component: SignUpComponent },
   { path: 'register', component: RegisterComponent },
+  {path:'doctor',component:DoctorsPageComponent},
   {
     path: 'dashboard',
     component: DashboardComponent,

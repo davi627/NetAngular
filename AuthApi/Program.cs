@@ -9,6 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 // EF Core + SQLite
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+// Register IHttpContextAccessor
+builder.Services.AddHttpContextAccessor();
 
 // Add CORS
 builder.Services.AddCors(options =>

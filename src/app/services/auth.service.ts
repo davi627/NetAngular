@@ -37,6 +37,16 @@ export class AuthService {
     return localStorage.getItem('role');
   }
 
+  getToken(): string | null {
+    return localStorage.getItem('token');
+  }
+  
+  getProfile() {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.getToken()}`);
+    return this.http.get(`${this.baseUrl}/me`, { headers });
+  }
+  
+
   isLoggedIn(): boolean {
     return !!localStorage.getItem('token');
   }

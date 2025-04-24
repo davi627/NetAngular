@@ -30,7 +30,11 @@ export class SignUpComponent {
         this.authService.saveUserData(response.token, response.role);
         if (response.role === 'Admin') {
           this.router.navigateByUrl('/admin');
-        } else {
+        } 
+        else if(response.role==='Doctor'){
+          this.router.navigateByUrl('/doctor')
+        }
+        else {
           this.router.navigateByUrl('/dashboard');
         }
       },
