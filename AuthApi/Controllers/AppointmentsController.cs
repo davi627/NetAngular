@@ -4,72 +4,138 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
-namespace AuthApi.Controllers{
-[ApiController]
-[Route("api/[controller]")]
-public class AppointmentsController : ControllerBase
+namespace AuthApi.Controllers
 {
-    private readonly ApplicationDbContext _context;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public AppointmentsController(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class AppointmentsController : ControllerBase
     {
-        _context = context;
-        _httpContextAccessor = httpContextAccessor;
-    }
+        private readonly ApplicationDbContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-    [HttpPost]
-    [Authorize]
-    public async Task<IActionResult> CreateAppointment([FromBody] AppointmentDto dto)
-    {
-        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-
-        var appointment = new Appointment
+        public AppointmentsController(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
         {
-            Date = dto.Date,
-            Time = dto.Time,
-            DoctorName = dto.DoctorName,
-            Department = dto.Department,
-            Reason= dto.Reason,
-            UserId = userId
-        };
-
-        _context.Appointments.Add(appointment);
-        await _context.SaveChangesAsync();
-
-        return Ok(new { message = "Appointment booked successfully", appointment });
-    }
-
-    [HttpGet]
-    [Authorize]
-    public async Task<IActionResult> GetAppointments()
-    {
-        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-
-        var appointments = await _context.Appointments
-            .Where(a => a.UserId == userId)
-            .ToListAsync();
-
-        return Ok(appointments);
-    }
-
-    [HttpDelete("{id}")]
-    [Authorize]
-    public async Task<IActionResult> CancelAppointment(int id)
-    {
-        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-        var appointment = await _context.Appointments.FirstOrDefaultAsync(a => a.Id == id && a.UserId == userId);
-
-        if (appointment == null)
-        {
-            return NotFound("Appointment not found.");
+            _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        _context.Appointments.Remove(appointment);
-        await _context.SaveChangesAsync();
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> CreateAppointment([FromBody] AppointmentDto dto)
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-        return Ok(new { message = "Appointment cancelled." });
+            var appointment = new Appointment
+            {
+                Date = dto.Date,
+                Time = dto.Time,
+                DoctorName = dto.DoctorName,
+                Department = dto.Department,
+                Reason = dto.Reason,
+                UserId = userId
+            };
+
+            _context.Appointments.Add(appointment);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Appointment booked successfully", appointment });
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetAppointments()
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+            var userName = User.FindFirst(ClaimTypes.Name)?.Value;
+
+            if (userRole == "Doctor")
+            {
+                var doctorAppointments = await _context.Appointments
+                    .Where(a => a.DoctorName.ToLower() == userName.ToLower())
+                    .ToListAsync();
+
+                return Ok(doctorAppointments);
+            }
+            else
+            {
+                var appointments = await _context.Appointments
+                    .Where(a => a.UserId == userId)
+                    .ToListAsync();
+
+                return Ok(appointments);
+            }
+        }
+
+        [HttpGet("doctors")]
+        public async Task<IActionResult> GetDoctors()
+        {
+            var doctors = await _context.Users
+                .Where(u => u.Role == "Doctor")
+                .Select(u => new { u.Id, u.Username })
+                .ToListAsync();
+
+            return Ok(doctors);
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize]
+        public async Task<IActionResult> CancelAppointment(int id)
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            var appointment = await _context.Appointments.FirstOrDefaultAsync(a => a.Id == id && a.UserId == userId);
+
+            if (appointment == null)
+            {
+                return NotFound("Appointment not found.");
+            }
+
+            _context.Appointments.Remove(appointment);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Appointment cancelled." });
+        }
+
+        // ✅ NEW: PATCH endpoint to update appointment status
+        [HttpPatch("{id}/status")]
+        [Authorize]
+        public async Task<IActionResult> UpdateAppointmentStatus(int id, [FromBody] StatusUpdateDto statusDto)
+        {
+            var appointment = await _context.Appointments.FindAsync(id);
+            if (appointment == null)
+            {
+                return NotFound("Appointment not found.");
+            }
+
+            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+            var doctorName = User.FindFirst(ClaimTypes.Name)?.Value;
+
+            if (userRole == "Doctor" && appointment.DoctorName.ToLower() != doctorName.ToLower())
+            {
+                return Forbid("You are not authorized to update this appointment.");
+            }
+
+            if (statusDto.Status == "Accepted")
+            {
+                appointment.Status = "Approved";
+            }
+            else if (statusDto.Status == "Rejected")
+            {
+                appointment.Status = "Canceled";
+            }
+            else
+            {
+                return BadRequest("Invalid status value.");
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Status updated successfully." });
+        }
+
+        // Helper DTO
+        public class StatusUpdateDto
+        {
+            public string Status { get; set; }
+        }
     }
 }
-
-};

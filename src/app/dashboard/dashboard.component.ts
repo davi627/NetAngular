@@ -11,7 +11,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 export class DashboardComponent implements OnInit {
   
-
+  doctors: any[] = [];
   selectedSection = 'myProfile';
   userProfile: any;
 
@@ -33,10 +33,19 @@ export class DashboardComponent implements OnInit {
         console.error('Error fetching profile', err);
       }
     });
-
+  
     this.initForm();
     this.loadAppointments();
+    this.loadDoctors(); // ← NEW
   }
+  
+  loadDoctors() {
+    this.appointmentService.getDoctors().subscribe({
+      next: (res) => this.doctors = res,
+      error: (err) => console.error('Failed to load doctors:', err)
+    });
+  }
+  
 
   logout() {
     this.authService.logout();

@@ -27,7 +27,13 @@
         <form [formGroup]="appointmentForm" (ngSubmit)="bookAppointment()">
           <input formControlName="date" type="date" placeholder="Date" />
           <input formControlName="time" type="time" placeholder="Time" />
-          <input formControlName="doctorName" type="text" placeholder="Doctor's Name" />
+          <select formControlName="doctorName">
+            <option value="">Select Doctor</option>
+            <option *ngFor="let doctor of doctors" [value]="doctor.username">
+              {{ doctor.username }}
+            </option>
+          </select>
+          
           <input formControlName="department" type="text" placeholder="Department" />
           <input formControlName="reason" type="text" placeholder="reason" />
           <button type="submit" [disabled]="appointmentForm.invalid">Book</button>

@@ -41,10 +41,11 @@ export class AuthService {
     return localStorage.getItem('token');
   }
   
-  getProfile() {
+  getProfile(): Observable<User> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.getToken()}`);
-    return this.http.get(`${this.baseUrl}/me`, { headers });
+    return this.http.get<User>(`${this.baseUrl}/me`, { headers });
   }
+  
   
 
   isLoggedIn(): boolean {

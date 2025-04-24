@@ -8,7 +8,7 @@ export interface Appointment {
   time: string;
   doctorName: string;
   department: string;
-  reason:string;
+  reason: string;
   status?: string;
 }
 
@@ -28,23 +28,32 @@ export class AppointmentsService {
     });
   }
 
-  // 📌 Book a new appointment
   bookAppointment(data: Appointment): Observable<any> {
     return this.http.post(this.baseUrl, data, {
       headers: this.getAuthHeaders()
     });
   }
 
-  // 📌 Get user's appointments
   getAppointments(): Observable<Appointment[]> {
     return this.http.get<Appointment[]>(this.baseUrl, {
       headers: this.getAuthHeaders()
     });
   }
 
-  // 📌 Cancel an appointment by ID
+  getDoctors(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/doctors`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
   cancelAppointment(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/${id}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  updateAppointmentStatus(id: number, status: string): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/${id}/status`, { status }, {
       headers: this.getAuthHeaders()
     });
   }
