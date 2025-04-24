@@ -50,7 +50,7 @@ export class DoctorsPageComponent implements OnInit {
 
   loadDoctors(): void {
     this.appointmentsService.getDoctors().subscribe({
-      next: (res) => console.log('Doctors loaded', res), // Replace with your actual logic
+      next: (res) => console.log('Doctors loaded', res),
       error: (err) => console.error('Error loading doctors', err)
     });
   }
