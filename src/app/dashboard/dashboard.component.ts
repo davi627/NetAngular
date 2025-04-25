@@ -90,4 +90,21 @@ export class DashboardComponent implements OnInit {
       error: (err) => console.error('Cancel error:', err)
     });
   }
+
+  acceptReschedule(appointmentId: number, newDate: string, newTime: string) {
+    const payload = {
+      status: 'Rescheduled',
+      newDate,
+      newTime
+    };
+  
+    this.appointmentService.acceptReschedule(appointmentId, payload).subscribe({
+      next: () => {
+        this.loadAppointments();
+        alert('Appointment rescheduled successfully.');
+      },
+      error: (err) => console.error('Error accepting reschedule', err)
+    });
+  }
+  
 }

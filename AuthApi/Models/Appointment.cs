@@ -9,6 +9,10 @@ public class Appointment
     public string Reason { get; set; }
     public string Status { get; set; } = "Pending";
     public int UserId { get; set; }
+    public DateTime? ProposedNewDate { get; set; }
+    public string? ProposedNewTime { get; set; }
+    public string? CancellationNote { get; set; }
+
 
     // Navigation property
     public User User { get; set; }

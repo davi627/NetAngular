@@ -10,6 +10,7 @@ export interface Appointment {
   department: string;
   reason: string;
   status?: string;
+  patientUsername?: string; 
 }
 
 @Injectable({
@@ -52,9 +53,29 @@ export class AppointmentsService {
     });
   }
 
-  updateAppointmentStatus(id: number, status: string): Observable<any> {
-    return this.http.patch(`${this.baseUrl}/${id}/status`, { status }, {
+  updateAppointmentStatus(
+    id: number, 
+    statusOrPayload: string | { 
+      status: string;
+      proposedNewDate?: string;
+      proposedNewTime?: string; 
+      cancellationNote?: string;
+    }
+  ): Observable<any> {
+    let payload: any;
+    
+    if (typeof statusOrPayload === 'string') {
+      payload = { status: statusOrPayload };
+    } else {
+      payload = statusOrPayload;
+    }
+    
+    return this.http.patch(`${this.baseUrl}/${id}/status`, payload, {
       headers: this.getAuthHeaders()
     });
   }
+  acceptReschedule(id: number, payload: any) {
+    return this.http.patch(`${this.baseUrl}/${id}/accept-reschedule`, payload);
+  }
+  
 }

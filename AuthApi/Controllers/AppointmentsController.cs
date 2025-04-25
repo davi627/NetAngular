@@ -50,13 +50,26 @@ namespace AuthApi.Controllers
             var userName = User.FindFirst(ClaimTypes.Name)?.Value;
 
             if (userRole == "Doctor")
-            {
-                var doctorAppointments = await _context.Appointments
-                    .Where(a => a.DoctorName.ToLower() == userName.ToLower())
-                    .ToListAsync();
+{
+    var doctorAppointments = await _context.Appointments
+        .Where(a => a.DoctorName.ToLower() == userName.ToLower())
+        .Include(a => a.User) 
+        .Select(a => new
+        {
+            a.Id,
+            a.Date,
+            a.Time,
+            a.DoctorName,
+            a.Department,
+            a.Reason,
+            a.Status,
+            PatientUsername = a.User.Username 
+        })
+        .ToListAsync();
 
-                return Ok(doctorAppointments);
-            }
+    return Ok(doctorAppointments);
+}
+
             else
             {
                 var appointments = await _context.Appointments
@@ -119,10 +132,13 @@ namespace AuthApi.Controllers
             {
                 appointment.Status = "Approved";
             }
-            else if (statusDto.Status == "Rejected")
-            {
+            else if  (statusDto.Status == "Rejected")
+{
                 appointment.Status = "Canceled";
-            }
+                appointment.ProposedNewDate = statusDto.ProposedNewDate;
+                appointment.ProposedNewTime = statusDto.ProposedNewTime;
+                appointment.CancellationNote = statusDto.CancellationNote;
+}
             else
             {
                 return BadRequest("Invalid status value.");
@@ -136,6 +152,44 @@ namespace AuthApi.Controllers
         public class StatusUpdateDto
         {
             public string Status { get; set; }
+            public DateTime? ProposedNewDate { get; set; }
+            public string? ProposedNewTime { get; set; }
+            public string? CancellationNote { get; set; }
         }
+
+        [HttpPatch("{id}/accept-reschedule")]
+[Authorize]
+public async Task<IActionResult> AcceptReschedule(int id, [FromBody] AcceptRescheduleDto dto)
+{
+    var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+    var appointment = await _context.Appointments.FirstOrDefaultAsync(a => a.Id == id && a.UserId == userId);
+    if (appointment == null)
+    {
+        return NotFound("Appointment not found.");
     }
+
+    appointment.Date = dto.NewDate;
+    appointment.Time = dto.NewTime;
+    appointment.Status = "Rescheduled";
+
+    // Clear previous suggestion after rescheduling
+    appointment.ProposedNewDate = null;
+    appointment.ProposedNewTime = null;
+    appointment.CancellationNote = null;
+
+    await _context.SaveChangesAsync();
+
+    return Ok(new { message = "Appointment rescheduled successfully." });
+}
+
+public class AcceptRescheduleDto
+{
+    public string NewDate { get; set; }
+    public string NewTime { get; set; }
+}
+
+    }
+
+    
 }

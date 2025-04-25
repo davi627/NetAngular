@@ -7,6 +7,7 @@
     <li *ngFor="let appointment of doctorAppointments">
       <strong>{{ appointment.date }} at {{ appointment.time }}</strong><br />
       <em>Reason: {{ appointment.reason }}</em><br />
+      <span class="patient">🧑‍🤝‍🧑 Sent by: {{ appointment.patientUsername }}</span><br>
       <span [ngClass]="{
         'approved': appointment.status === 'Accepted',
         'canceled': appointment.status === 'Rejected',
@@ -17,14 +18,15 @@
 
       <div>
         <button 
-  (click)="updateStatus(appointment.id!, 'Accepted')" 
-  [disabled]="appointment.status === 'Accepted' || appointment.status === 'Rejected'">
-  ✅ Accept
-</button>
+        (click)="updateStatus(appointment.id!, 'Accepted')" 
+        [disabled]="appointment.status === 'Accepted' || appointment.status === 'Rejected'">
+        {{ appointment.status === 'Accepted' ? 'Accepted' : 'Accept' }}
+      </button>
+      
 <button 
   (click)="updateStatus(appointment.id!, 'Rejected')" 
   [disabled]="appointment.status === 'Accepted' || appointment.status === 'Rejected'">
-  ❌ Reject
+   Reject
 </button>
       </div>
     </li>
@@ -33,4 +35,25 @@
   <ng-template #noAppointments>
     <p>No appointments yet.</p>
   </ng-template>
+  
+  <div *ngIf="showRescheduleModal" class="modal-overlay">
+    <div class="modal-content">
+      <h3>Suggest a New Date & Time</h3>
+      
+      <label>New Date:</label>
+      <input type="date" [(ngModel)]="rescheduleDate" required />
+      
+      <label>New Time:</label>
+      <input type="time" [(ngModel)]="rescheduleTime" required />
+      
+      <label>Note (optional):</label>
+      <textarea [(ngModel)]="cancelNote" rows="3" placeholder="Reason or note..."></textarea>
+      
+      <div class="modal-buttons">
+        <button (click)="submitReschedule()">Submit</button>
+        <button (click)="showRescheduleModal = false">Cancel</button>
+      </div>
+    </div>
+  </div>
+  
 </div>

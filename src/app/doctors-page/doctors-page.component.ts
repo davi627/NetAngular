@@ -18,6 +18,11 @@ export class DoctorsPageComponent implements OnInit {
   doctorAppointments: Appointment[] = [];
   doctorName: string = '';
   userProfile: User | null = null;
+  rescheduleDate: string = '';
+  rescheduleTime: string = '';
+  cancelNote: string = '';
+  selectedAppointmentId: number | null = null;
+  showRescheduleModal: boolean = false;
 
   constructor(
     private appointmentsService: AppointmentsService,
@@ -35,6 +40,12 @@ export class DoctorsPageComponent implements OnInit {
       error: (err) => console.error('Error fetching profile', err)
     });
   }
+  //opening the module for the rescheduling
+  openRescheduleModal(appointmentId: number): void {
+    this.selectedAppointmentId = appointmentId;
+    this.showRescheduleModal = true;
+  }
+  
 
   loadAppointments(): void {
     this.appointmentsService.getAppointments().subscribe({
@@ -68,7 +79,30 @@ export class DoctorsPageComponent implements OnInit {
       error: (err) => console.error('Status update error:', err)
     });
   }
-  
+//sending the rejection of appointment with the reschedule info
+submitReschedule(): void {
+  if (!this.selectedAppointmentId) return;
+
+  const payload = {
+    status: 'Rejected',
+    proposedNewDate: this.rescheduleDate,
+    proposedNewTime: this.rescheduleTime,
+    cancellationNote: this.cancelNote
+  };
+
+  this.appointmentsService.updateAppointmentStatus(this.selectedAppointmentId, payload).subscribe({
+    next: () => {
+      this.loadAppointments(); 
+      this.showRescheduleModal = false;
+      this.selectedAppointmentId = null;
+      this.rescheduleDate = '';
+      this.rescheduleTime = '';
+      this.cancelNote = '';
+    },
+    error: (err) => console.error('Error updating with reschedule', err)
+  });
+}
+
   
   logout(){
     this.authService.logout()
