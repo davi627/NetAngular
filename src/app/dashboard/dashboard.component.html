@@ -45,7 +45,12 @@
             <strong>{{ appointment.date }} at {{ appointment.time }}</strong> with 
             Dr. {{ appointment.doctorName }} ({{ appointment.department }}) - 
             <em>{{ appointment.status || 'Pending' }}</em>
-            <button (click)="cancelAppointment(appointment.id!)">Cancel</button>
+        <button (click)="cancelAppointment(appointment.id!)">Cancel</button>
+            <button 
+            *ngIf="appointment.status?.toLowerCase() === 'rescheduled'" 
+            (click)="acceptReschedule(appointment.id!, appointment.newDate, appointment.newTime)">
+           Accept Reschedule
+        </button>
           </li>
         </ul>
       

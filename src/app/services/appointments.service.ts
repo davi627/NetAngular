@@ -11,6 +11,8 @@ export interface Appointment {
   reason: string;
   status?: string;
   patientUsername?: string; 
+  newDate:string;
+  newTime:string;
 }
 
 @Injectable({

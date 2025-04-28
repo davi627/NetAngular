@@ -84,7 +84,7 @@ submitReschedule(): void {
   if (!this.selectedAppointmentId) return;
 
   const payload = {
-    status: 'Rejected',
+    status: 'Rescheduled',
     proposedNewDate: this.rescheduleDate,
     proposedNewTime: this.rescheduleTime,
     cancellationNote: this.cancelNote

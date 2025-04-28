@@ -132,9 +132,9 @@ namespace AuthApi.Controllers
             {
                 appointment.Status = "Approved";
             }
-            else if  (statusDto.Status == "Rejected")
+            else if  (statusDto.Status == "Rescheduled")
 {
-                appointment.Status = "Canceled";
+                appointment.Status = "Rescheduled";
                 appointment.ProposedNewDate = statusDto.ProposedNewDate;
                 appointment.ProposedNewTime = statusDto.ProposedNewTime;
                 appointment.CancellationNote = statusDto.CancellationNote;
@@ -157,7 +157,7 @@ namespace AuthApi.Controllers
             public string? CancellationNote { get; set; }
         }
 
-        [HttpPatch("{id}/accept-reschedule")]
+[HttpPatch("{id}/accept-reschedule")]
 [Authorize]
 public async Task<IActionResult> AcceptReschedule(int id, [FromBody] AcceptRescheduleDto dto)
 {
@@ -169,7 +169,7 @@ public async Task<IActionResult> AcceptReschedule(int id, [FromBody] AcceptResch
         return NotFound("Appointment not found.");
     }
 
-    appointment.Date = dto.NewDate;
+    appointment.Date = dto.NewDate; 
     appointment.Time = dto.NewTime;
     appointment.Status = "Rescheduled";
 

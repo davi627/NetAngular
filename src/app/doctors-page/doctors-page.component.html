@@ -23,11 +23,12 @@
         {{ appointment.status === 'Accepted' ? 'Accepted' : 'Accept' }}
       </button>
       
-<button 
-  (click)="updateStatus(appointment.id!, 'Rejected')" 
-  [disabled]="appointment.status === 'Accepted' || appointment.status === 'Rejected'">
-   Reject
-</button>
+      <button 
+      (click)="openRescheduleModal(appointment.id!)" 
+      [disabled]="appointment.status === 'Accepted' || appointment.status === 'Rejected'">
+      Reject
+    </button>
+    
       </div>
     </li>
   </ul>

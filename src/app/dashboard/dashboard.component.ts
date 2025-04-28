@@ -36,7 +36,7 @@ export class DashboardComponent implements OnInit {
   
     this.initForm();
     this.loadAppointments();
-    this.loadDoctors(); // ← NEW
+    this.loadDoctors(); 
   }
   
   loadDoctors() {
@@ -91,20 +91,21 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  acceptReschedule(appointmentId: number, newDate: string, newTime: string) {
+  acceptReschedule(appointmentId: number, newDate: string, newTime: string): void {
     const payload = {
-      status: 'Rescheduled',
+      status: 'Rescheduled',  
       newDate,
       newTime
     };
   
     this.appointmentService.acceptReschedule(appointmentId, payload).subscribe({
       next: () => {
-        this.loadAppointments();
+        this.loadAppointments(); 
         alert('Appointment rescheduled successfully.');
       },
       error: (err) => console.error('Error accepting reschedule', err)
     });
   }
+  
   
 }
