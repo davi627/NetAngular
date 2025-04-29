@@ -171,7 +171,7 @@ public async Task<IActionResult> AcceptReschedule(int id, [FromBody] AcceptResch
 
     appointment.Date = dto.NewDate; 
     appointment.Time = dto.NewTime;
-    appointment.Status = "Rescheduled";
+    appointment.Status = "Rescheduled Accepted";
 
     // Clear previous suggestion after rescheduling
     appointment.ProposedNewDate = null;

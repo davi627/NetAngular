@@ -1,60 +1,150 @@
-<div class="doctor-dashboard">
-  <h2>👨‍⚕️ Welcome, Dr. {{ doctorName }}</h2>
-  <h3>🗂 Your Appointments</h3>
-  <button (click)="logout()">Logout</button>
-
-  <ul *ngIf="doctorAppointments.length > 0; else noAppointments">
-    <li *ngFor="let appointment of doctorAppointments">
-      <strong>{{ appointment.date }} at {{ appointment.time }}</strong><br />
-      <em>Reason: {{ appointment.reason }}</em><br />
-      <span class="patient">🧑‍🤝‍🧑 Sent by: {{ appointment.patientUsername }}</span><br>
-      <span [ngClass]="{
-        'approved': appointment.status === 'Accepted',
-        'canceled': appointment.status === 'Rejected',
-        'pending': !appointment.status
-      }">
-        Status: {{ appointment.status || 'Pending' }}
-      </span>
-
-      <div>
-        <button 
-        (click)="updateStatus(appointment.id!, 'Accepted')" 
-        [disabled]="appointment.status === 'Accepted' || appointment.status === 'Rejected'">
-        {{ appointment.status === 'Accepted' ? 'Accepted' : 'Accept' }}
-      </button>
-      
-      <button 
-      (click)="openRescheduleModal(appointment.id!)" 
-      [disabled]="appointment.status === 'Accepted' || appointment.status === 'Rejected'">
-      Reject
-    </button>
+<!-- Angular Doctor Dashboard Template -->
+<div class="layout-container">
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar" [class.open]="sidebarOpen">
+    <div class="sidebar-header">
+      <i class="fas fa-heartbeat"></i>
+      <h1>MediDash</h1>
+    </div>
     
-      </div>
-    </li>
-  </ul>
+    <nav class="sidebar-nav">
+      <ul>
+        <li><a routerLink="/dashboard" routerLinkActive="active"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li><a routerLink="/appointments" routerLinkActive="active"><i class="fas fa-calendar-alt"></i> Appointments</a></li>
+        <li><a routerLink="/patients" routerLinkActive="active"><i class="fas fa-user-injured"></i> Patients</a></li>
+        <li><a routerLink="/records" routerLinkActive="active"><i class="fas fa-file-medical"></i> Records</a></li>
+        <li><a routerLink="/settings" routerLinkActive="active"><i class="fas fa-cog"></i> Settings</a></li>
+      </ul>
+    </nav>
+    
+    <div class="sidebar-footer">
+      <span>© 2025 MediDash</span>
+    </div>
+  </aside>
 
-  <ng-template #noAppointments>
-    <p>No appointments yet.</p>
-  </ng-template>
-  
-  <div *ngIf="showRescheduleModal" class="modal-overlay">
-    <div class="modal-content">
-      <h3>Suggest a New Date & Time</h3>
-      
-      <label>New Date:</label>
-      <input type="date" [(ngModel)]="rescheduleDate" required />
-      
-      <label>New Time:</label>
-      <input type="time" [(ngModel)]="rescheduleTime" required />
-      
-      <label>Note (optional):</label>
-      <textarea [(ngModel)]="cancelNote" rows="3" placeholder="Reason or note..."></textarea>
-      
-      <div class="modal-buttons">
-        <button (click)="submitReschedule()">Submit</button>
-        <button (click)="showRescheduleModal = false">Cancel</button>
+  <!-- Top Navigation Bar -->
+  <header class="top-nav">
+    <div class="top-nav-left">
+      <button class="menu-toggle" (click)="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+      </button>
+      <span class="page-title">Doctor Dashboard</span>
+    </div>
+    
+    <div class="top-nav-right">
+      <div class="nav-item">
+        <i class="far fa-bell"></i>
+      </div>
+      <div class="nav-item">
+        <button (click)="logout()">
+          <i class="fas fa-sign-out-alt"></i>
+          Logout
+        </button>
+      </div>
+      <div class="nav-item">
+        <div class="user-avatar" *ngIf="doctorName">
+          {{ doctorName.charAt(0) }}
+        </div>
       </div>
     </div>
-  </div>
-  
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <div class="doctor-dashboard">
+      <!-- Dashboard Header -->
+      <div class="dashboard-header">
+        <h2>Welcome, Dr. {{ doctorName }}</h2>
+        <p>{{ today | date:'EEEE, MMMM d, yyyy' }}</p>
+      </div>
+      
+      <!-- Dashboard Stats -->
+      <div class="dashboard-stats">
+        <div class="stat-card">
+          <h3>Today's Appointments</h3>
+          <div class="stat-value">{{ getTodayAppointments() }}</div>
+        </div>
+        
+        <div class="stat-card">
+          <h3>Pending Approval</h3>
+          <div class="stat-value">{{ getPendingAppointments() }}</div>
+        </div>
+        
+        <div class="stat-card">
+          <h3>Total Appointments</h3>
+          <div class="stat-value">{{ doctorAppointments.length }}</div>
+        </div>
+      </div>
+      
+      <!-- Appointments Section -->
+      <div class="section-header">
+        <h3>Your Appointments</h3>
+      </div>
+      
+      <ul *ngIf="doctorAppointments.length > 0; else noAppointments">
+        <li *ngFor="let appointment of doctorAppointments">
+          <div class="appointment-header">
+            <div>
+              <span class="appointment-time">{{ appointment.time }}</span>
+              <span class="appointment-date">{{ appointment.date }}</span>
+            </div>
+            <span class="appointment-status" [ngClass]="{
+              'approved': appointment.status === 'Accepted',
+              'canceled': appointment.status === 'Rejected',
+              'pending': !appointment.status
+            }">
+              {{ appointment.status || 'Pending' }}
+            </span>
+          </div>
+          
+          <div class="appointment-details">
+            <em>Reason: {{ appointment.reason }}</em>
+            <div class="patient">
+              <div class="patient-avatar">{{ appointment.patientUsername?.charAt(0)?.toUpperCase() ?? '' }}</div>
+              <span>{{ appointment.patientUsername }}</span>
+            </div>
+          </div>
+          
+          <div class="appointment-actions">
+            <button 
+              (click)="updateStatus(appointment.id!, 'Accepted')" 
+              [disabled]="appointment.status === 'Accepted' || appointment.status === 'Rejected'">
+              {{ appointment.status === 'Accepted' ? 'Accepted' : 'Accept' }}
+            </button>
+            
+            <button 
+              (click)="openRescheduleModal(appointment.id!)" 
+              [disabled]="appointment.status === 'Accepted' || appointment.status === 'Rejected'">
+              Reject
+            </button>
+          </div>
+        </li>
+      </ul>
+
+      <ng-template #noAppointments>
+        <p>No appointments scheduled at this time.</p>
+      </ng-template>
+      
+      <!-- Reschedule Modal -->
+      <div *ngIf="showRescheduleModal" class="modal-overlay">
+        <div class="modal-content">
+          <h3>Reject Appointment</h3>
+          
+          <label>Suggest New Date (Optional):</label>
+          <input type="date" [(ngModel)]="rescheduleDate" />
+          
+          <label>Suggest New Time (Optional):</label>
+          <input type="time" [(ngModel)]="rescheduleTime" />
+          
+          <label>Reason for Rejection:</label>
+          <textarea [(ngModel)]="cancelNote" rows="3" placeholder="Please provide a reason..."></textarea>
+          
+          <div class="modal-buttons">
+            <button (click)="submitReschedule()">Submit</button>
+            <button (click)="showRescheduleModal = false">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
 </div>

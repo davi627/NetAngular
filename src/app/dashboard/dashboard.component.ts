@@ -17,6 +17,8 @@ export class DashboardComponent implements OnInit {
 
   appointmentForm!: FormGroup;
   appointments: Appointment[] = [];
+  rescheduleDetails: { id: number; newDate: string; newTime: string } | null = null;
+
 
   constructor(
     private authService: AuthService,
@@ -91,21 +93,32 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  acceptReschedule(appointmentId: number, newDate: string, newTime: string): void {
+  showRescheduleDetails(appointmentId: number, newDate: string, newTime: string) {
+    this.rescheduleDetails = { id: appointmentId, newDate, newTime };
+  }
+
+  confirmAcceptReschedule() {
+    if (!this.rescheduleDetails) return;
+  
+    const { id, newDate, newTime } = this.rescheduleDetails;
+  
     const payload = {
-      status: 'Rescheduled',  
-      newDate,
-      newTime
+      NewDate: newDate,
+      NewTime: newTime
     };
   
-    this.appointmentService.acceptReschedule(appointmentId, payload).subscribe({
+    this.appointmentService.acceptReschedule(id, payload).subscribe({
       next: () => {
-        this.loadAppointments(); 
-        alert('Appointment rescheduled successfully.');
+        this.rescheduleDetails = null;
+        this.loadAppointments();
+        alert('Rescheduled appointment accepted.');
       },
       error: (err) => console.error('Error accepting reschedule', err)
     });
   }
+  
+
+  
   
   
 }

@@ -10,9 +10,9 @@ export interface Appointment {
   department: string;
   reason: string;
   status?: string;
-  patientUsername?: string; 
-  newDate:string;
-  newTime:string;
+  patientUsername?: string;
+  NewDate?: string; 
+  NewTime?: string;
 }
 
 @Injectable({
@@ -77,7 +77,10 @@ export class AppointmentsService {
     });
   }
   acceptReschedule(id: number, payload: any) {
-    return this.http.patch(`${this.baseUrl}/${id}/accept-reschedule`, payload);
+    return this.http.patch(`${this.baseUrl}/${id}/accept-reschedule`, payload, {
+      headers: this.getAuthHeaders()
+    });
   }
+  
   
 }

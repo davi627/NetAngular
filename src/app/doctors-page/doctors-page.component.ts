@@ -23,6 +23,8 @@ export class DoctorsPageComponent implements OnInit {
   cancelNote: string = '';
   selectedAppointmentId: number | null = null;
   showRescheduleModal: boolean = false;
+  sidebarOpen: boolean = true;
+  today: Date = new Date();
 
   constructor(
     private appointmentsService: AppointmentsService,
@@ -39,14 +41,51 @@ export class DoctorsPageComponent implements OnInit {
       },
       error: (err) => console.error('Error fetching profile', err)
     });
+    
+    // Check screen size on init
+    this.checkScreenSize();
+    
+    // Listen for window resize events
+    window.addEventListener('resize', () => {
+      this.checkScreenSize();
+    });
   }
+  
+  // Check screen size and toggle sidebar
+  checkScreenSize(): void {
+    if (window.innerWidth < 768) {
+      this.sidebarOpen = false;
+    } else {
+      this.sidebarOpen = true;
+    }
+  }
+  
+  // Toggle sidebar for mobile view
+  toggleSidebar(): void {
+    this.sidebarOpen = !this.sidebarOpen;
+  }
+  
+  // Get today's appointments count
+  getTodayAppointments(): number {
+    const today = new Date().toISOString().split('T')[0];
+    return this.doctorAppointments.filter(
+      appointment => appointment.date === today
+    ).length;
+  }
+  
+  // Get pending appointments count
+  getPendingAppointments(): number {
+    return this.doctorAppointments.filter(
+      appointment => !appointment.status || appointment.status === 'Pending'
+    ).length;
+  }
+
   //opening the module for the rescheduling
   openRescheduleModal(appointmentId: number): void {
     this.selectedAppointmentId = appointmentId;
     this.showRescheduleModal = true;
   }
   
-
   loadAppointments(): void {
     this.appointmentsService.getAppointments().subscribe({
       next: (appointments: Appointment[]) => {
@@ -74,36 +113,35 @@ export class DoctorsPageComponent implements OnInit {
         if (target) {
           target.status = status;
         }
-
       },
       error: (err) => console.error('Status update error:', err)
     });
   }
-//sending the rejection of appointment with the reschedule info
-submitReschedule(): void {
-  if (!this.selectedAppointmentId) return;
-
-  const payload = {
-    status: 'Rescheduled',
-    proposedNewDate: this.rescheduleDate,
-    proposedNewTime: this.rescheduleTime,
-    cancellationNote: this.cancelNote
-  };
-
-  this.appointmentsService.updateAppointmentStatus(this.selectedAppointmentId, payload).subscribe({
-    next: () => {
-      this.loadAppointments(); 
-      this.showRescheduleModal = false;
-      this.selectedAppointmentId = null;
-      this.rescheduleDate = '';
-      this.rescheduleTime = '';
-      this.cancelNote = '';
-    },
-    error: (err) => console.error('Error updating with reschedule', err)
-  });
-}
-
   
+  //sending the rejection of appointment with the reschedule info
+  submitReschedule(): void {
+    if (!this.selectedAppointmentId) return;
+
+    const payload = {
+      status: 'Rescheduled',
+      proposedNewDate: this.rescheduleDate,
+      proposedNewTime: this.rescheduleTime,
+      cancellationNote: this.cancelNote
+    };
+
+    this.appointmentsService.updateAppointmentStatus(this.selectedAppointmentId, payload).subscribe({
+      next: () => {
+        this.loadAppointments(); 
+        this.showRescheduleModal = false;
+        this.selectedAppointmentId = null;
+        this.rescheduleDate = '';
+        this.rescheduleTime = '';
+        this.cancelNote = '';
+      },
+      error: (err) => console.error('Error updating with reschedule', err)
+    });
+  }
+
   logout(){
     this.authService.logout()
   }

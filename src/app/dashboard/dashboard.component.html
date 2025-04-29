@@ -45,12 +45,13 @@
             <strong>{{ appointment.date }} at {{ appointment.time }}</strong> with 
             Dr. {{ appointment.doctorName }} ({{ appointment.department }}) - 
             <em>{{ appointment.status || 'Pending' }}</em>
-        <button (click)="cancelAppointment(appointment.id!)">Cancel</button>
             <button 
             *ngIf="appointment.status?.toLowerCase() === 'rescheduled'" 
-            (click)="acceptReschedule(appointment.id!, appointment.newDate, appointment.newTime)">
-           Accept Reschedule
-        </button>
+            (click)="showRescheduleDetails(appointment.id!, appointment.NewDate!, appointment.NewTime!)"
+            >
+            Accept Reschedule
+          </button>
+          
           </li>
         </ul>
       
@@ -58,6 +59,15 @@
           <p>No appointments yet.</p>
         </ng-template>
       </div>
+
+      <div *ngIf="rescheduleDetails" class="reschedule-popup">
+        <h4>Reschedule Confirmation</h4>
+        <p>New Date: <strong>{{ rescheduleDetails.newDate }}</strong></p>
+        <p>New Time: <strong>{{ rescheduleDetails.newTime }}</strong></p>
+        <button (click)="confirmAcceptReschedule()">Confirm</button>
+        <button (click)="rescheduleDetails = null">Cancel</button>
+      </div>
+      
       
 
       <div *ngIf="selectedSection === 'help'">
